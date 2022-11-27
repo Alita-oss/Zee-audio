@@ -121,13 +121,43 @@ window.onload = function() {
             artist: 'Twenty One Pilots',
         },
     ];
-   
+
     const songElements = document.querySelectorAll('li');
     const mainImage = document.getElementById('mainImage');
     const controlsImage = document.getElementById('controlsImage');
     const controlsSong = document.getElementById('controlsSong');
     const controlsArtists = document.getElementById('controlsArtists');
     const mainAudio = document.getElementById('mainAudio');
+    const skipStart = document.getElementById('skipStart');
+    const playCircle = document.getElementById('playCircle');
+    const skipEnd = document.getElementById('skipEnd');
+    const currentPlayTime = document.getElementById('currentPlayTime');
+    const currentEnd = document.getElementById('currentEnd');
+
+    const prettyTime = (sec) => {
+        if (sec < 10) {
+            return '0:0' + sec;
+        } else if (sec < 59) {
+            return '0:' + sec;
+        } else {
+            const minutes = Math.floor(sec / 60);
+            const seconds = sec - (minutes * 60);
+            return minutes.toString() + ':' + (seconds < 10 ? '0' + seconds : seconds);
+        }
+    };
+
+    const onTimeUpdate = () => {
+        if (mainAudio && currentPlayTime) {
+            const time = Math.round(mainAudio.currentTime);
+            currentPlayTime.innerHTML = prettyTime(time);
+        } 
+    };
+
+    const getDuration = () => {
+        if (currentEnd) {
+            currentEnd.innerHTML = prettyTime(Math.round(mainAudio.duration));
+        }
+    };
 
     const playAudio = () => {
         mainAudio.play().catch((error) => {
@@ -137,6 +167,15 @@ window.onload = function() {
 
     const pauseAudio = () => {
         mainAudio.pause();
+    };
+
+    const addNewAudioSrc = (src) => {
+        if (mainAudio) {
+            mainAudio.removeEventListener('loadedmetadata', getDuration);
+            mainAudio.addEventListener('loadedmetadata', getDuration, false);
+            mainAudio.src = src;
+            playAudio();
+        }
     };
 
     const onMainSongClick = () => {
@@ -174,17 +213,35 @@ window.onload = function() {
             controlsImage.src = songObject.imageSrc;
             controlsSong.innerHTML = songObject.title;
             controlsArtists.innerHTML = songObject.artist;
-            mainAudio.src = songObject.audioSrc;
-            playAudio();
+            addNewAudioSrc(songObject.audioSrc);
         }
     };
 
-   
+    const onPlayClick = () => {
+        if (mainAudio.src) {
+            if (mainAudio.paused) {
+                playAudio();
+            } else {
+                pauseAudio();
+            }
+        }
+    };
+
+    const onClickSkipStart = () => {
+        
+    };
+
+    const onClickSkipEnd = () => {
+        
+    };
 
     for (let i = 0, j = songElements.length; i < j; i++) {
         songElements[i].addEventListener('click', onSongClick, false);
     }
 
     mainImage.addEventListener('click', onMainSongClick, false);
-
+    playCircle.addEventListener('click', onPlayClick, false);
+    skipStart.addEventListener('click', onClickSkipStart, false);
+    skipEnd.addEventListener('click', onClickSkipEnd, false);
+    mainAudio.addEventListener('timeupdate', onTimeUpdate, false);
 };
