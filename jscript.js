@@ -122,6 +122,9 @@ window.onload = function() {
         },
     ];
 
+    let currentSongIndex = -1;
+    const pauseClass = 'bi-pause-circle';
+    const playClass = 'bi-play-circle';
     const songElements = document.querySelectorAll('li');
     const mainImage = document.getElementById('mainImage');
     const controlsImage = document.getElementById('controlsImage');
@@ -160,13 +163,18 @@ window.onload = function() {
     };
 
     const playAudio = () => {
-        mainAudio.play().catch((error) => {
+        mainAudio.play().then(() => {
+           playCircle.classList.remove(playClass); 
+           playCircle.classList.add(pauseClass);
+        }).catch((error) => {
             console.log(error);
         });
     };
 
     const pauseAudio = () => {
         mainAudio.pause();
+        playCircle.classList.remove(pauseClass); 
+        playCircle.classList.add(playClass);
     };
 
     const addNewAudioSrc = (src) => {
@@ -188,10 +196,31 @@ window.onload = function() {
         }
     };
 
+    const addNewSong = (songObject) => {
+        if (songObject && songObject.id) {
+            mainImage.alt = songObject.imageAlt;
+            mainImage.src = songObject.imageSrc;
+            controlsImage.alt = songObject.imageAlt;
+            controlsImage.src = songObject.imageSrc;
+            controlsSong.innerHTML = songObject.title;
+            controlsArtists.innerHTML = songObject.artist;
+            addNewAudioSrc(songObject.audioSrc);
+        }
+    };
+
+    const findNewSong = (bob) => {
+        if (bob == 'prev') {
+            currentSongIndex = currentSongIndex - 1;
+        } else {
+            currentSongIndex = currentSongIndex + 1;
+        }
+        addNewSong(mainSongList[currentSongIndex]);
+    };
+
     const onSongClick = ($event) => {
         const path = $event.path;
         let songId;
-        let songObject;
+        let songObjectIndex;
         
         for (let i = 0, j = path.length; i < j; i++) {
             if (path[i].tagName == 'LI') {
@@ -201,19 +230,14 @@ window.onload = function() {
         }
 
         if (songId){
-            songObject = mainSongList.find((x) => {
+            songObjectIndex = mainSongList.findIndex((x) => {
                 return x.id == songId;
             });
         }
 
-        if (songObject && songObject.id) {
-            mainImage.alt = songObject.imageAlt;
-            mainImage.src = songObject.imageSrc;
-            controlsImage.alt = songObject.imageAlt;
-            controlsImage.src = songObject.imageSrc;
-            controlsSong.innerHTML = songObject.title;
-            controlsArtists.innerHTML = songObject.artist;
-            addNewAudioSrc(songObject.audioSrc);
+        if (songObjectIndex >= 0) {
+            currentSongIndex = songObjectIndex;
+            addNewSong(mainSongList[songObjectIndex]);
         }
     };
 
@@ -228,11 +252,19 @@ window.onload = function() {
     };
 
     const onClickSkipStart = () => {
-        
+        if (mainAudio) {
+            if (mainAudio.currentTime < 2) {
+                findNewSong('prev');
+            } else {
+                mainAudio.currentTime = 0;
+            }
+        }
     };
 
     const onClickSkipEnd = () => {
-        
+        if (mainAudio) {
+            mainAudio.currentTime = mainAudio.duration;
+        }
     };
 
     for (let i = 0, j = songElements.length; i < j; i++) {
@@ -244,4 +276,5 @@ window.onload = function() {
     skipStart.addEventListener('click', onClickSkipStart, false);
     skipEnd.addEventListener('click', onClickSkipEnd, false);
     mainAudio.addEventListener('timeupdate', onTimeUpdate, false);
+    mainAudio.addEventListener('ended', findNewSong, false);
 };
