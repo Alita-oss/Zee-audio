@@ -1,14 +1,6 @@
 window.onload = function() {
     const mainSongList = [
         {
-            id: 'song-1',
-            title: 'Money Trees',
-            imageSrc: 'images/money_trees_kendrick.jpg',
-            imageAlt: 'Kendrick Lamer',
-            audioSrc: 'audio/money-trees.mp3',
-            artist: 'Kendrick Lamar & Jay Rock',
-        },
-        {
             id: 'song-2',
             title: 'Sweater Weather',
             imageSrc: 'images/sweater_weather_the_neighbourhood.jpg',
@@ -17,13 +9,21 @@ window.onload = function() {
             artist: 'The Neighbourhood',
         },
         {
-            id: 'song-3',
-            title: 'Cooler Than Me',
-            imageSrc: 'images/cooler_than_me_mike_posner.jpg',
-            imageAlt: 'Mike Posner',
-            audioSrc: 'audio/cooler-them-me.mp3',
-            artist: 'Mike Posner',
+            id: 'song-1',
+            title: 'Money Trees',
+            imageSrc: 'images/money_trees_kendrick.jpg',
+            imageAlt: 'Kendrick Lamer',
+            audioSrc: 'audio/money-trees.mp3',
+            artist: 'Kendrick Lamar & Jay Rock',
         },
+        // {
+        //     id: 'song-3',
+        //     title: 'Cooler Than Me',
+        //     imageSrc: 'images/cooler_than_me_mike_posner.jpg',
+        //     imageAlt: 'Mike Posner',
+        //     audioSrc: 'audio/cooler-them-me.mp3',
+        //     artist: 'Mike Posner',
+        // },
         {
             id: 'song-4',
             title: 'Snow On The Beach',
@@ -125,7 +125,7 @@ window.onload = function() {
     let currentSongIndex = -1;
     const pauseClass = 'bi-pause-circle';
     const playClass = 'bi-play-circle';
-    const songElements = document.querySelectorAll('li');
+    
     const mainImage = document.getElementById('mainImage');
     const controlsImage = document.getElementById('controlsImage');
     const controlsSong = document.getElementById('controlsSong');
@@ -136,6 +136,43 @@ window.onload = function() {
     const skipEnd = document.getElementById('skipEnd');
     const currentPlayTime = document.getElementById('currentPlayTime');
     const currentEnd = document.getElementById('currentEnd');
+    const listElement = document.getElementById('listElement');
+
+    const liFactory = () => {
+        for (let i = 0, j = mainSongList.length; i < j; i++) {
+            const songObject = mainSongList[i];
+
+            const li = document.createElement('li');
+            li.classList.add('songItem');
+            li.setAttribute('id', songObject.id);
+            li.addEventListener('click', onSongClick, false);
+
+            const span = document.createElement('span');
+            span.append(i + 1);
+
+            const img = document.createElement('img');
+            img.src = songObject.imageSrc;
+            img.alt = songObject.imageAlt;
+
+            const h5 = document.createElement('h5');
+            const song = document.createElement('div');
+            song.append(songObject.title);
+            const artist = document.createElement('div');
+            artist.append(songObject.artist);
+            artist.classList.add('subtitle');
+            h5.append(song, artist);
+
+            const icon = document.createElement('img');
+            icon.classList.add('bi', 'playListPlay', 'bi-play-circle-fill');
+            icon.setAttribute('id', i + 1);
+            icon.src = 'icons/play.svg';
+            icon.alt = 'play';
+
+            li.append(span, img, h5, icon);
+
+            listElement.append(li);
+        }    
+    };
 
     const prettyTime = (sec) => {
         if (sec < 10) {
@@ -267,9 +304,7 @@ window.onload = function() {
         }
     };
 
-    for (let i = 0, j = songElements.length; i < j; i++) {
-        songElements[i].addEventListener('click', onSongClick, false);
-    }
+    liFactory();
 
     mainImage.addEventListener('click', onMainSongClick, false);
     playCircle.addEventListener('click', onPlayClick, false);
