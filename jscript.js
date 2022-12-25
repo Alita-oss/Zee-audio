@@ -16,14 +16,14 @@ window.onload = function() {
             audioSrc: 'audio/money-trees.mp3',
             artist: 'Kendrick Lamar & Jay Rock',
         },
-        // {
-        //     id: 'song-3',
-        //     title: 'Cooler Than Me',
-        //     imageSrc: 'images/cooler_than_me_mike_posner.jpg',
-        //     imageAlt: 'Mike Posner',
-        //     audioSrc: 'audio/cooler-them-me.mp3',
-        //     artist: 'Mike Posner',
-        // },
+        {
+            id: 'song-3',
+            title: 'Cooler Than Me',
+            imageSrc: 'images/cooler_than_me_mike_posner.jpg',
+            imageAlt: 'Mike Posner',
+            audioSrc: 'audio/cooler-them-me.mp3',
+            artist: 'Mike Posner',
+        },
         {
             id: 'song-4',
             title: 'Snow On The Beach',
@@ -123,9 +123,9 @@ window.onload = function() {
     ];
 
     let currentSongIndex = -1;
-    const pauseClass = 'bi-pause-circle';
-    const playClass = 'bi-play-circle';
-    
+    let loopSong = false;
+    let shuffleSongs = false;
+    let repeatPlaylist = false;
     const mainImage = document.getElementById('mainImage');
     const controlsImage = document.getElementById('controlsImage');
     const controlsSong = document.getElementById('controlsSong');
@@ -137,6 +137,10 @@ window.onload = function() {
     const currentPlayTime = document.getElementById('currentPlayTime');
     const currentEnd = document.getElementById('currentEnd');
     const listElement = document.getElementById('listElement');
+    const shuffle = document.getElementById('shuffle');
+    const loop = document.getElementById('loop');
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    const repeat = document.getElementById('repeat');
 
     const liFactory = () => {
         for (let i = 0, j = mainSongList.length; i < j; i++) {
@@ -201,8 +205,10 @@ window.onload = function() {
 
     const playAudio = () => {
         mainAudio.play().then(() => {
-           playCircle.classList.remove(playClass); 
-           playCircle.classList.add(pauseClass);
+           if (playPauseIcon) {
+                playPauseIcon.src = 'icons/pause.svg';
+                playPauseIcon.alt = 'pause';
+           }
         }).catch((error) => {
             console.log(error);
         });
@@ -210,8 +216,8 @@ window.onload = function() {
 
     const pauseAudio = () => {
         mainAudio.pause();
-        playCircle.classList.remove(pauseClass); 
-        playCircle.classList.add(playClass);
+        playPauseIcon.src = 'icons/play.svg';
+        playPauseIcon.alt = 'play'; 
     };
 
     const addNewAudioSrc = (src) => {
@@ -241,6 +247,7 @@ window.onload = function() {
             controlsImage.src = songObject.imageSrc;
             controlsSong.innerHTML = songObject.title;
             controlsArtists.innerHTML = songObject.artist;
+            mainAudio.currentTime = 0;
             addNewAudioSrc(songObject.audioSrc);
         }
     };
@@ -249,8 +256,20 @@ window.onload = function() {
         if (bob == 'prev') {
             currentSongIndex = currentSongIndex - 1;
         } else {
-            currentSongIndex = currentSongIndex + 1;
+            if (loopSong) {
+                //Go to start of the current song
+            } else if (shuffleSongs) {
+                // Go to random song
+                currentSongIndex = Math.floor(Math.random() * mainSongList.length);
+            } else if (repeatPlaylist && currentSongIndex == mainSongList.length - 1) {
+                // Go to the first song
+                currentSongIndex = 0;
+            } else {
+                //Go to the next song
+                currentSongIndex = currentSongIndex + 1;
+            }
         }
+
         addNewSong(mainSongList[currentSongIndex]);
     };
 
@@ -304,6 +323,25 @@ window.onload = function() {
         }
     };
 
+    const onRepeatClick = () => {
+        repeatPlaylist = !repeatPlaylist;
+    };
+
+    const onShuffleClick = () => {
+        shuffleSongs = !shuffleSongs;
+        if (shuffleSongs) {
+            // Add active class
+            shuffle.classList.add('active');
+        } else {
+            // Remove active class
+            shuffle.classList.remove('active');
+        }
+    };
+
+    const onLoopClick = () => {
+        loopSong = !loopSong;
+    };
+
     liFactory();
 
     mainImage.addEventListener('click', onMainSongClick, false);
@@ -312,4 +350,7 @@ window.onload = function() {
     skipEnd.addEventListener('click', onClickSkipEnd, false);
     mainAudio.addEventListener('timeupdate', onTimeUpdate, false);
     mainAudio.addEventListener('ended', findNewSong, false);
+    repeat.addEventListener('click', onRepeatClick, false);
+    shuffle.addEventListener('click', onShuffleClick, false);
+    loop.addEventListener('click', onLoopClick, false);
 };
