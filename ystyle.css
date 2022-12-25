@@ -299,3 +299,7 @@ main .master_play .bar .dot::before{
 main .master_play .symbol {
     color: #ffffff;
 }
+
+.active {
+    fill: #0cca18;
+}

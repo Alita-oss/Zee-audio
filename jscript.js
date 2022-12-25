@@ -325,21 +325,50 @@ window.onload = function() {
 
     const onRepeatClick = () => {
         repeatPlaylist = !repeatPlaylist;
+
+        if (repeat) {
+            const child = repeat.firstElementChild;
+
+            if (repeatPlaylist) {
+                // Add active class
+                child.classList.add('active');
+            } else {
+                // Remove active class
+                child.classList.remove('active');
+            }
+        }
     };
 
     const onShuffleClick = () => {
         shuffleSongs = !shuffleSongs;
-        if (shuffleSongs) {
-            // Add active class
-            shuffle.classList.add('active');
-        } else {
-            // Remove active class
-            shuffle.classList.remove('active');
-        }
+
+        if (shuffle) {
+            const child = shuffle.firstElementChild;
+
+            if (shuffleSongs) {
+                // Add active class
+                child.classList.add('active');
+            } else {
+                // Remove active class
+                child.classList.remove('active');
+            }
+        } 
     };
 
     const onLoopClick = () => {
         loopSong = !loopSong;
+
+        if (loop) {
+            const child = loop.firstElementChild;
+
+            if (loopSong) {
+                // Add active class
+                child.classList.add('active');
+            } else {
+                // Remove active class
+                child.classList.remove('active');
+            }
+        }
     };
 
     liFactory();
