@@ -303,3 +303,8 @@ main .master_play .symbol {
 .active {
     fill: #0cca18;
 }
+
+svg {
+    width: 35px;
+    height: 35px;
+}
