@@ -111,7 +111,6 @@ main .menu_side .menu_song::-webkit-scrollbar {
     width: 4px;
 }
 
-
 main .menu_side .menu_song::-webkit-scrollbar-track {
     border-radius: 5px;
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.25);
